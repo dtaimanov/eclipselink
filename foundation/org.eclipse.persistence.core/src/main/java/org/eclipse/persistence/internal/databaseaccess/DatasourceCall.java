@@ -927,7 +927,7 @@ public abstract class DatasourceCall implements Call {
      * Return the characters that represent non-arguments names.
      */
     protected String whitespace() {
-        return ",); \n\t:";
+        return ",); \r\n\t:";// jmix: added \r
     }
 
     /**
