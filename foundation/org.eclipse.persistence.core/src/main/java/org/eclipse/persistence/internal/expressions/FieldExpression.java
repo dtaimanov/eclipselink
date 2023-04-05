@@ -404,6 +404,8 @@ public class FieldExpression extends DataExpression {
                 printer.setIsFirstElementPrinted(true);
             }
             printSQL(printer);
+
+            addFieldAliasIfNeeded(printer, field, statement);// jmix
         } else {
             super.writeField(printer, field, statement);
         }
