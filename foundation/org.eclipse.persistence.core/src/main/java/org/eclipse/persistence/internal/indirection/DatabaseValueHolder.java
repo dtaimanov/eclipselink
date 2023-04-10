@@ -20,6 +20,7 @@ import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
 import org.eclipse.persistence.internal.helper.Helper;
+import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
@@ -99,6 +100,14 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
             synchronized (this) {
                 instantiated = this.isInstantiated;
                 if (!instantiated) {
+                    // jmix begin: We have added the following code to prevent fetch of lazy fields
+                    // from database when transaction is already finished
+                    if (session instanceof UnitOfWorkImpl) {
+                        if (((UnitOfWorkImpl) session).getLifecycle() >= UnitOfWorkImpl.Death) {
+                            throwUnfetchedAttributeException();
+                        }
+                    }
+                    // jmix end
                     // The value must be set directly because the setValue can also cause instantiation under UOW.
                     privilegedSetValue(instantiate());
                     this.isInstantiated = true;
@@ -328,4 +337,11 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
             return "{" + Helper.getShortClassName(getClass()) + ": " + ToStringLocalization.buildMessage("not_instantiated", null) + "}";
         }
     }
+
+    // jmix begin
+    protected void throwUnfetchedAttributeException() {
+        throw new IllegalStateException(
+                ExceptionLocalization.buildMessage("cannot_get_unfetched_attribute", new Object[]{"", ""}));
+    }
+    // jmix end
 }
