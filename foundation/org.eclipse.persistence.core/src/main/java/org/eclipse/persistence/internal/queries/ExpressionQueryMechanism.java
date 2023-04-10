@@ -1279,6 +1279,10 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
 
             SQLSelectStatement selectStatementForExist = createSQLSelectStatementForModifyAll(whereClause);
 
+            // jmix: needed for comparing attributes to null
+            selectStatementForExist.setTranslationRow(getQuery().getTranslationRow());
+            // jmix end
+
             // Main Case: Descriptor is mapped to more than one table and/or the query references other tables
             boolean isMainCase = selectStatementForExist.requiresAliases();
             if (isMainCase) {
