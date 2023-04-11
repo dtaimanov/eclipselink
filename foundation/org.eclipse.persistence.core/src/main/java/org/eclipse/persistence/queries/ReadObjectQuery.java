@@ -334,7 +334,11 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
                         && (!hasPartialAttributeExpressions()) && (redirector == null) && !doNotRedirect
                         && (!hasAsOfClause()) && (!hasNonDefaultFetchGroup())
                         && (this.shouldUseSerializedObjectPolicy == shouldUseSerializedObjectPolicyDefault)
-                        && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)) {
+                        && this.wasDefaultLockMode && (shouldBindAllParameters == null) && (this.hintString == null)
+                        // jmix begin: do not use custom query if BATCH mode is set for some attributes
+                        && !hasBatchReadAttributes()
+                        // jmix end
+                ) {
                     if ((this.selectionId != null) || (this.selectionObject != null)) {// Must be primary key.
                         return Boolean.TRUE;
                     } else {
