@@ -51,6 +51,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
+import org.eclipse.persistence.cuba.CubaUtil;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -1260,12 +1261,21 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
          */
         public void checkAndRefreshInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
             if (isConsideredInvalid(object, cacheKey, descriptor)) {
-                ReadObjectQuery query = new ReadObjectQuery();
-                query.setReferenceClass(object.getClass());
-                query.setSelectionId(cacheKey.getKey());
-                query.refreshIdentityMapResult();
-                query.setIsExecutionClone(true);
-                this.executeQuery(query);
+                // jmix begin: always load refreshed object
+                Object prop = CubaUtil.beginDisableSoftDelete(this);
+                try {
+                // jmix end
+                    ReadObjectQuery query = new ReadObjectQuery();
+                    query.setReferenceClass(object.getClass());
+                    query.setSelectionId(cacheKey.getKey());
+                    query.refreshIdentityMapResult();
+                    query.setIsExecutionClone(true);
+                    this.executeQuery(query);
+                // jmix begin
+                } finally {
+                    CubaUtil.endDisableSoftDelete(this, prop);
+                }
+                // jmix end
             }
         }
 
