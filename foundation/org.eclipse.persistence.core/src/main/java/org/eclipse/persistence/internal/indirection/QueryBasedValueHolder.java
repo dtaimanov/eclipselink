@@ -25,7 +25,9 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
+import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * QueryBasedValueHolder wraps a database-stored object and implements behavior
@@ -133,10 +135,39 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
         if (this.query.isObjectBuildingQuery() && ((ObjectBuildingQuery)this.query).shouldRefreshIdentityMapResult()){
             this.refreshCascade = this.query.getCascadePolicy();
         }
-        Object result = session.executeQuery(getQuery(), getRow());
-        // Bug 489898 - ensure that the query's session is dereferenced, post-execution
-        getQuery().setSession(null);
-        return (T) result;
+        // jmix begin
+        if (getQuery() instanceof ReadAllQuery) {
+            if (Boolean.TRUE.equals(session.getProperty("cuba.disableSoftDelete"))) {
+                ReadQuery query = (ReadQuery) getQuery().clone();
+                query.setIsPrepared(false);
+                Object result = session.executeQuery(query, getRow());
+                // Bug 489898 - ensure that the query's session is dereferenced, post-execution
+                getQuery().setSession(null);
+                return (T) result;
+            }
+            Object result = session.executeQuery(getQuery(), getRow());
+            // Bug 489898 - ensure that the query's session is dereferenced, post-execution
+            getQuery().setSession(null);
+            return (T) result;
+        } else {
+            AbstractSession clientSession = (session instanceof UnitOfWork) ? session.getParent() : session;
+            Object property = clientSession.getProperty("cuba.disableSoftDelete");
+            clientSession.setProperty("cuba.disableSoftDelete", true);
+            try {
+                ReadQuery query = (ReadQuery) getQuery().clone();
+                query.setIsPrepared(false);
+                Object result = session.executeQuery(query, getRow());
+                // Bug 489898 - ensure that the query's session is dereferenced, post-execution
+                getQuery().setSession(null);
+                return (T) result;
+            } finally {
+                if (property != null)
+                    clientSession.setProperty("cuba.disableSoftDelete", property);
+                else
+                    clientSession.removeProperty("cuba.disableSoftDelete");
+            }
+        }
+        // jmix end
     }
 
     /**
