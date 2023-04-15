@@ -2488,7 +2488,7 @@ final class ExpressionBuilderVisitor implements EclipseLinkExpressionVisitor {
                         localExpression = localExpression.getAllowingNull(path);
                     }
                     // jmix start
-                    else if (!last && foreignReferenceMapping && nullAllowedInSortBy) {
+                    else if (foreignReferenceMapping && nullAllowedInSortBy) {
                         localExpression = localExpression.getAllowingNull(path);
                     }
                     // jmix end
