@@ -38,6 +38,7 @@ import org.eclipse.persistence.expressions.ExpressionBuilder;
 import org.eclipse.persistence.internal.descriptors.CascadeLockingPolicy;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.expressions.FieldExpression;
+import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.ParameterExpression;
 import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
@@ -123,6 +124,10 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
     protected DataModifyQuery addTargetQuery;
     protected boolean hasCustomAddTargetQuery;
     protected Boolean shouldDeferInserts = null;
+
+    // jmix begin
+    protected Expression additionalJoinCriteria;
+    // jmix end
 
     /**
      * Query used to update a single target row changing its foreign key value from the one pointing to the source to null.
@@ -1717,4 +1722,23 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
         insertQuery.setIsExecutionClone(true);
         return insertQuery;
     }
+
+    // jmix begin
+    public void setAdditionalJoinCriteria(Expression expression) {
+        additionalJoinCriteria = expression;
+    }
+
+    @Override
+    public Expression getJoinCriteria(ObjectExpression context, Expression base) {
+        Expression selectionCriteria = getSelectionCriteria();
+        Expression keySelectionCriteria = this.containerPolicy.getKeySelectionCriteria();
+        if (keySelectionCriteria != null) {
+            selectionCriteria = selectionCriteria.and(keySelectionCriteria);
+        }
+        if (additionalJoinCriteria != null) {
+            selectionCriteria = selectionCriteria.and(additionalJoinCriteria);
+        }
+        return context.getBaseExpression().twist(selectionCriteria, base);
+    }
+    // jmix end
 }
