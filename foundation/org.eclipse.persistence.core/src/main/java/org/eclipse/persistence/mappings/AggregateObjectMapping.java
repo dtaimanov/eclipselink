@@ -476,7 +476,8 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
             descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, nestedQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
         }
         if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager() && cacheKey != null
-                && !refreshing && sourceQuery.shouldMaintainCache() && !sourceQuery.shouldStoreBypassCache()) {
+                && (!refreshing || ((FetchGroupTracker) aggregate)._persistence_getFetchGroup() == null)// jmix
+                && sourceQuery.shouldMaintainCache() && !sourceQuery.shouldStoreBypassCache()) {
             // Set the fetch group to the domain object, after built.
             EntityFetchGroup entityFetchGroup = descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup);
             if (entityFetchGroup != null) {
