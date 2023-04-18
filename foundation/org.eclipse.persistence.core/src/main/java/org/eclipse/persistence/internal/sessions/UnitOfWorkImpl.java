@@ -95,16 +95,7 @@ import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.ForeignReferenceMapping;
 import org.eclipse.persistence.mappings.foundation.AbstractTransformationMapping;
 import org.eclipse.persistence.platform.server.ServerPlatform;
-import org.eclipse.persistence.queries.Call;
-import org.eclipse.persistence.queries.DatabaseQuery;
-import org.eclipse.persistence.queries.DeleteObjectQuery;
-import org.eclipse.persistence.queries.DoesExistQuery;
-import org.eclipse.persistence.queries.InMemoryQueryIndirectionPolicy;
-import org.eclipse.persistence.queries.ModifyAllQuery;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.ReadObjectQuery;
-import org.eclipse.persistence.queries.ReadQuery;
+import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 import org.eclipse.persistence.sessions.Session;
 import org.eclipse.persistence.sessions.SessionProfiler;
@@ -155,6 +146,11 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected Map<Object, Object> cloneMapping;
     protected Map<Object, Object> newObjectsCloneToOriginal;
     protected Map<Object, Object> newObjectsOriginalToClone;
+
+    // jmix begin
+    protected Set<Object> objectsInLoading;
+    // jmix end
+
     /**
      * Stores a map from the clone to the original merged object, as a different instance is used as the original for merges.
      */
@@ -2603,6 +2599,48 @@ public class UnitOfWorkImpl extends AbstractSession implements org.eclipse.persi
     protected boolean hasObjectsDeletedDuringCommit() {
         return ((objectsDeletedDuringCommit != null) && !objectsDeletedDuringCommit.isEmpty());
     }
+
+    // jmix begin
+    public Set getObjectsInLoading() {
+        if (objectsInLoading == null) {
+            objectsInLoading = new IdentityHashSet();
+        }
+        return objectsInLoading;
+    }
+
+    @Override
+    public void load(Object objectOrCollection, AttributeGroup group) {
+        if (objectOrCollection != null && !(objectOrCollection instanceof Collection)) {
+            if (!getObjectsInLoading().contains(objectOrCollection)) {
+                try {
+                    getObjectsInLoading().add(objectOrCollection);
+                    super.load(objectOrCollection, group);
+                } finally {
+                    getObjectsInLoading().remove(objectOrCollection);
+                }
+            }
+        } else {
+            super.load(objectOrCollection, group);
+        }
+    }
+
+    @Override
+    public void load(Object objectOrCollection, AttributeGroup group, ClassDescriptor referenceDescriptor, boolean fromFetchGroup) {
+        if (objectOrCollection != null && !(objectOrCollection instanceof Collection)) {
+            if (!getObjectsInLoading().contains(objectOrCollection)) {
+                try {
+                    getObjectsInLoading().add(objectOrCollection);
+                    super.load(objectOrCollection, group, referenceDescriptor, fromFetchGroup);
+                } finally {
+                    getObjectsInLoading().remove(objectOrCollection);
+                }
+            }
+        } else {
+            super.load(objectOrCollection, group, referenceDescriptor, fromFetchGroup);
+        }
+    }
+    // jmix end
+
 
     /**
      * INTERNAL:
