@@ -272,6 +272,15 @@ public class CopyGroup extends AttributeGroup {
         return clone;
     }
 
+    // jmix begin
+    @Override
+    public CopyGroup cloneWithSameAttributes() {
+        CopyGroup clone = (CopyGroup)super.cloneWithSameAttributes();
+        clone.copies = new IdentityHashMap();
+        return clone;
+    }
+    // jmix end
+
     /**
      * Returns CopyGroup corresponding to the passed (possibly nested) attribute.
      */

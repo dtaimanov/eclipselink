@@ -311,6 +311,13 @@ public class FetchGroup extends AttributeGroup {
         return (FetchGroup)super.clone();
     }
 
+    // jmix begin
+    @Override
+    public FetchGroup cloneWithSameAttributes() {
+        return (FetchGroup)super.cloneWithSameAttributes();
+    }
+    // jmix end
+
     @Override
     public LoadGroup toLoadGroup(Map<AttributeGroup, LoadGroup> cloneMap, boolean loadOnly){
         if (loadOnly && !this.shouldLoad){

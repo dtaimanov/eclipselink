@@ -58,6 +58,13 @@ public class LoadGroup extends AttributeGroup {
         return (LoadGroup)super.clone();
     }
 
+    // jmix begin
+    @Override
+    public LoadGroup cloneWithSameAttributes() {
+        return (LoadGroup)super.cloneWithSameAttributes();
+    }
+    // jmix end
+
     /**
      * Returns LoadGroup corresponding to the passed (possibly nested) attribute.
      */

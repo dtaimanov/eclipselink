@@ -317,6 +317,13 @@ public class AttributeGroup extends CoreAttributeGroup<AttributeItem, ClassDescr
         return (AttributeGroup)super.clone();
     }
 
+    // jmix begin
+    @Override
+    public AttributeGroup cloneWithSameAttributes() {
+        return (AttributeGroup)super.cloneWithSameAttributes();
+    }
+    // jmix end
+
     /**
      * INTERNAL:
      * Only LoadGroups allow concurrency.
