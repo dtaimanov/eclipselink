@@ -117,6 +117,13 @@ public class XMLAnyAttributeMapping extends DatabaseMapping implements XMLMappin
         throw DescriptorException.invalidMappingOperation(this, "buildCloneFromRow");
     }
 
+    // jmix begin
+    @Override
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession, boolean lookupField) {
+        buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, sourceQuery, unitOfWork, executionSession);
+    }
+    // jmix end
+
     /**
      * INTERNAL:
      * Cascade perform delete through mappings that require the cascade

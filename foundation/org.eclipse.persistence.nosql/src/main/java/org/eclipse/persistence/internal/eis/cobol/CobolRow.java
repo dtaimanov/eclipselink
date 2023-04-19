@@ -71,4 +71,10 @@ public class CobolRow extends DatabaseRecord {
         }
         return value;
     }
+
+    // jmix begin
+    public Object get(DatabaseField key, boolean lookupField) {
+        return get(key);
+    }
+    // jmix end
 }

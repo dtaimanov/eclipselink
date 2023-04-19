@@ -147,6 +147,13 @@ public abstract class AbstractCompositeDirectCollectionMapping extends DatabaseM
         Object cloneAttributeValue = valueFromRow(row, joinManager, sourceQuery, sharedCacheKey, executionSession, true, new Boolean[1]);
         setAttributeValueInObject(clone, cloneAttributeValue);
     }
+    // jmix begin
+    @Override
+    public void buildCloneFromRow(AbstractRecord databaseRow, JoinedAttributeManager joinManager, Object clone, CacheKey sharedCacheKey, ObjectBuildingQuery sourceQuery, UnitOfWorkImpl unitOfWork, AbstractSession executionSession, boolean lookupField) {
+        buildCloneFromRow(databaseRow, joinManager, clone, sharedCacheKey, sourceQuery, unitOfWork, executionSession);
+    }
+    // jmix end
+
 
     /**
      * Build and return a clone of the specified attribute value.

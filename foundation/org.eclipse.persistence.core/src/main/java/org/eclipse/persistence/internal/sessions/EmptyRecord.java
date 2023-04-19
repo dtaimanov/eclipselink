@@ -39,6 +39,12 @@ public class EmptyRecord extends DatabaseRecord {
         super(0);
     }
 
+    // jmix begin
+    public Object get(DatabaseField key, boolean lookupField) {
+        return get(key);
+    }
+    // jmix end
+
     /**
      * Need to return a real record.
      */

@@ -159,6 +159,12 @@ public class ArrayRecord extends DatabaseRecord {
         }
     }
 
+    // jmix begin
+    public Object get(DatabaseField key, boolean lookupField) {
+        return get(key);
+    }
+    // jmix end
+
     /**
      * INTERNAL:
      * Retrieve the value for the field. If missing DatabaseRow.noEntry is returned.

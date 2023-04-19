@@ -313,6 +313,14 @@ public abstract class AbstractRecord extends CoreAbstractRecord implements DataR
         }
     }
 
+    // jmix begin
+    /**
+     * INTERNAL:
+     * Retrieve the value for the field. If missing null is returned.
+     */
+    public abstract Object get(DatabaseField key, boolean lookupField);
+    // jmix end
+
     //----------------------------------------------------------------------------//
     public Object getValues(DatabaseField key) {
         return get(key);
