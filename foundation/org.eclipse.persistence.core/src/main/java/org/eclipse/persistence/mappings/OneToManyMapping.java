@@ -52,15 +52,7 @@ import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.ObjectChangeSet;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
 import org.eclipse.persistence.mappings.foundation.MapComponentMapping;
-import org.eclipse.persistence.queries.DataModifyQuery;
-import org.eclipse.persistence.queries.DeleteAllQuery;
-import org.eclipse.persistence.queries.DeleteObjectQuery;
-import org.eclipse.persistence.queries.InsertObjectQuery;
-import org.eclipse.persistence.queries.ModifyQuery;
-import org.eclipse.persistence.queries.ObjectBuildingQuery;
-import org.eclipse.persistence.queries.ObjectLevelModifyQuery;
-import org.eclipse.persistence.queries.ObjectLevelReadQuery;
-import org.eclipse.persistence.queries.WriteObjectQuery;
+import org.eclipse.persistence.queries.*;
 import org.eclipse.persistence.sessions.DatabaseRecord;
 
 /**
@@ -1739,6 +1731,20 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
             selectionCriteria = selectionCriteria.and(additionalJoinCriteria);
         }
         return context.getBaseExpression().twist(selectionCriteria, base);
+    }
+
+    @Override
+    public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
+        if (org.eclipse.persistence.internal.helper.CubaUtil.isOriginalSoftDeletion()) {
+            Boolean prevSoftDeletion = org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(true);
+            try {
+                return super.prepareNestedBatchQuery(query);
+            } finally {
+                org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(prevSoftDeletion);
+            }
+        } else {
+            return super.prepareNestedBatchQuery(query);
+        }
     }
     // jmix end
 }
