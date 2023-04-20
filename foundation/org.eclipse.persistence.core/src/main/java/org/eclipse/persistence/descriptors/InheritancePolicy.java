@@ -54,6 +54,7 @@ import org.eclipse.persistence.internal.security.PrivilegedAccessHelper;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.mappings.Association;
+import org.eclipse.persistence.mappings.DatabaseMapping;
 import org.eclipse.persistence.mappings.TypedAssociation;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
@@ -1498,11 +1499,45 @@ public class InheritancePolicy extends CoreInheritancePolicy<AbstractRecord, Abs
             throw QueryException.noDescriptorForClassFromInheritancePolicy(query, concreteClass);
         }
 
+        // jmix begin
+
+        // joinedMappingIndexes contains Integer indexes corresponding to the number of fields
+        // to which the query reference class is mapped, for instance:
+        // referenceClass = SmallProject => joinedMappingIndexes(0) = 6;
+        // referenceClass = LargeProject => joinedMappingIndexes(0) = 8;
+        // This information should be preserved in the main query against the parent class,
+        // therefore in this case joinedMappedIndexes contains a Map of classes to Integers:
+        // referenceClass = Project => joinedMappingIndexes(0) = Map {SmallProject -> 6; LargeProject -> 8}.
+        Map<DatabaseMapping, Object> joinedMappingIndexes = null;
+        if (query.hasJoining()) {
+            joinedMappingIndexes = new HashMap<>();
+        }
+        // jmix end
+
         ReadObjectQuery concreteQuery = (ReadObjectQuery)query.clone();
         concreteQuery.setReferenceClass(concreteClass);
         concreteQuery.setDescriptor(concreteDescriptor);
 
         AbstractRecord resultRow = ((ExpressionQueryMechanism)concreteQuery.getQueryMechanism()).selectOneRowFromConcreteTable();
+
+        // jmix begin
+        if (joinedMappingIndexes != null) {
+            // Need to set mapping index for each select, as each row size is different.
+            for (Map.Entry<DatabaseMapping, Object> entry :
+                    concreteQuery.getJoinedAttributeManager().getJoinedMappingIndexes_().entrySet()) {
+                HashMap mappingIndexes = (HashMap) joinedMappingIndexes.get(entry.getKey());
+                if (mappingIndexes == null) {
+                    mappingIndexes = new HashMap();
+                    mappingIndexes.put(concreteClass, entry.getValue());
+                    joinedMappingIndexes.put(entry.getKey(), mappingIndexes);
+                }
+            }
+        }
+
+        if (joinedMappingIndexes != null) {
+            query.getJoinedAttributeManager().setJoinedMappingIndexes_(joinedMappingIndexes);
+        }
+        // jmix end
 
         return resultRow;
     }
