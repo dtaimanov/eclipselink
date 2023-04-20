@@ -142,6 +142,13 @@ public class FetchGroup extends AttributeGroup {
      * into the entity.
      */
     public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName) {
+// jmix begin
+        return onUnfetchedAttribute(entity, attributeName, null);
+    }
+
+
+    public String onUnfetchedAttribute(FetchGroupTracker entity, String attributeName, FetchGroup newFetchGroup) {
+// jmix end
         if (rootEntity != null){
             return rootEntity._persistence_getFetchGroup().onUnfetchedAttribute(rootEntity, attributeName);
         }
@@ -173,6 +180,8 @@ public class FetchGroup extends AttributeGroup {
             // To avoid infinite loop clear the fetch group right away.
             entity._persistence_setFetchGroup(null);
             entity._persistence_setSession(null);
+        } else if (newFetchGroup != null) {
+            query.setFetchGroup(newFetchGroup);
         }
         Object result = null;
         // jmix begin
