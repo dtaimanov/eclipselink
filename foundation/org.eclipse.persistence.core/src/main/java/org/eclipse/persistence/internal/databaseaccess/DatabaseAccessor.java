@@ -589,6 +589,12 @@ public class DatabaseAccessor extends DatasourceAccessor {
      * @return depending of the type either the row count, row or vector of rows.
      */
     public Object basicExecuteCall(Call call, AbstractRecord translationRow, AbstractSession session, boolean batch) throws DatabaseException {
+        // jmix begin
+        long prepareTime = 0;
+        long executionTime = 0;
+        long closeTime = 0;
+        long connectionHash = -1;
+        // jmix end
         Statement statement = null;
         Object result = null;
         DatabaseCall dbCall = null;
@@ -623,11 +629,19 @@ public class DatabaseAccessor extends DatasourceAccessor {
         try {
             incrementCallCount(session);
             if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
-                session.log(SessionLog.FINE, SessionLog.SQL, dbCall.getLogString(this), null, this, false);
+                // jmix begin
+                Connection connection = getConnection();
+                if (connection != null) {
+                    connectionHash = connection.hashCode();
+                }
+                // jmix end
+                session.log(SessionLog.FINE, SessionLog.SQL, buildLogString(dbCall, connectionHash,-1), null, this, false);
             }
             session.startOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
             try {
+                long prepareStart = System.currentTimeMillis(); // jmix
                 statement = dbCall.prepareStatement(this, translationRow, session);
+                prepareTime = System.currentTimeMillis() - prepareStart; // jmix
             } finally {
                 session.endOperationProfile(SessionProfiler.SqlPrepare, dbCall.getQuery(), SessionProfiler.ALL);
             }
@@ -639,6 +653,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                 this.possibleFailure = false;
                 return dbCall;
             } else if (dbCall.isNothingReturned()) {
+                long executeStart = System.currentTimeMillis(); // jmix
                 result = executeNoSelect(dbCall, statement, session);
                 this.writeStatementsCount++;
                 if (dbCall.isLOBLocatorNeeded()) {
@@ -655,10 +670,14 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     this.possibleFailure = false;
                     return dbCall;
                 }
+                executionTime = System.currentTimeMillis() - executeStart; // jmix
             } else if ((!dbCall.getReturnsResultSet() || (dbCall.getReturnsResultSet() && dbCall.shouldBuildOutputRow()))) {
+                long executeStart = System.currentTimeMillis(); // jmix
                 result = session.getPlatform().executeStoredProcedure(dbCall, (PreparedStatement)statement, this, session);
                 this.storedProcedureStatementsCount++;
+                executionTime = System.currentTimeMillis() - executeStart; // jmix
             } else {
+                long executeStart = System.currentTimeMillis(); // jmix
                 resultSet = executeSelect(dbCall, statement, session);
                 this.readStatementsCount++;
                 if (!dbCall.shouldIgnoreFirstRowSetting() && dbCall.getFirstResult() != 0) {
@@ -673,6 +692,7 @@ public class DatabaseAccessor extends DatasourceAccessor {
                     return dbCall;
                 }
                 result = processResultSet(resultSet, dbCall, statement, session);
+                executionTime = System.currentTimeMillis() - executeStart; // jmix
             }
             if (result instanceof ThreadCursoredList) {
                 this.possibleFailure = false;
@@ -719,8 +739,10 @@ public class DatabaseAccessor extends DatasourceAccessor {
 
         // This is in a separate try block to ensure that the real exception is not masked by the close exception.
         try {
+            long closeStart = System.currentTimeMillis(); // jmix
             // Allow for caching of statement, forced closes are not cache as they failed execution so are most likely bad.
             releaseStatement(statement, dbCall.getSQLString(), dbCall, session);
+            closeTime = System.currentTimeMillis() - closeStart; // jmix
         } catch (SQLException exception) {
             //With an external connection pool the connection may be null after this call, if it is we will
             //be unable to determine if it is a connection based exception so treat it as if it wasn't.
@@ -730,6 +752,13 @@ public class DatabaseAccessor extends DatasourceAccessor {
             }
             throw DatabaseException.sqlException(exception, this, session, false);
         }
+
+        // jmix begin
+        if (session.shouldLog(SessionLog.FINE, SessionLog.SQL)) {// Avoid printing if no logging required.
+            session.log(SessionLog.FINE, SessionLog.SQL, buildLogString(dbCall, connectionHash, prepareTime + executionTime + closeTime),
+                    (Object[])null, this, false);
+        }
+        // jmix end
 
         this.possibleFailure = false;
         return result;
@@ -2036,4 +2065,21 @@ public class DatabaseAccessor extends DatasourceAccessor {
             getActiveBatchWritingMechanism(session).executeBatchedStatements(session);
         }
     }
+
+    // jmix begin
+    protected String buildLogString(DatabaseCall dbCall, long connectionHash, long totalTime) {
+        StringBuilder buf = new StringBuilder();
+        buf.append("<t ").append(Thread.currentThread().hashCode());
+        if (connectionHash != -1) {
+            buf.append(", conn ").append(connectionHash);
+        }
+        buf.append("> ");
+        if (totalTime != -1) {
+            buf.append("[").append(totalTime).append(" ms] spent");
+        } else {
+            buf.append(dbCall.getLogString(this));
+        }
+        return buf.toString();
+    }
+    // jmix end
 }
