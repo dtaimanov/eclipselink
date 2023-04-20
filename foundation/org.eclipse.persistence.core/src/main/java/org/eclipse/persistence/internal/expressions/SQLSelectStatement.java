@@ -1755,6 +1755,7 @@ public class SQLSelectStatement extends SQLStatement {
             printSQLHavingClause(printer);
             printSQLOrderByClause(printer);
             printSQLForUpdateClause(printer);
+            printAfterQueryHint(printer); // jmix
             printSQLUnionClause(printer);
             return selectFields;
         } catch (IOException exception) {
@@ -1766,6 +1767,11 @@ public class SQLSelectStatement extends SQLStatement {
         Vector<DatabaseField> selectFields = null;
         printer.setRequiresDistinct(shouldDistinctBeUsed());
 
+        // jmix begin
+        DatabasePlatform.HintPosition hintPosition = printer.getPlatform().getHintPosition();
+        String hint = getHintString();
+        // jmix end
+
         if (hasUnionExpressions()) {
             // Ensure union order using brackets.
             int size = getUnionExpressions().size();
@@ -1773,12 +1779,23 @@ public class SQLSelectStatement extends SQLStatement {
                 printer.printString("(");
             }
         }
-        printer.printString("SELECT ");
 
-        if (getHintString() != null) {
-            printer.printString(getHintString());
+        // jmix begin
+        if (hintPosition == DatabasePlatform.HintPosition.BEFORE_QUERY && hint != null) {
+            printer.printString(" ");
+            printer.printString(hint);
             printer.printString(" ");
         }
+        // jmix end
+
+        printer.printString("SELECT ");
+
+        // jmix begin
+        if (hintPosition == DatabasePlatform.HintPosition.INSIDE_QUERY && hint != null) {
+            printer.printString(hint);
+            printer.printString(" ");
+        }
+        // jmix end
 
         if (shouldDistinctBeUsed()) {
             printer.printString("DISTINCT ");
@@ -1836,6 +1853,18 @@ public class SQLSelectStatement extends SQLStatement {
             appendForUpdateClause(printer);
         }
     }
+
+    // jmix begin
+    public void printAfterQueryHint(ExpressionSQLPrinter printer) throws IOException {
+        DatabasePlatform.HintPosition hintPosition = printer.getPlatform().getHintPosition();
+        String hint = getHintString();
+        if (hintPosition == DatabasePlatform.HintPosition.AFTER_QUERY && hint != null) {
+            printer.printString(" ");
+            printer.printString(hint);
+            printer.printString(" ");
+        }
+    }
+    // jmix end
 
     public void printSQLUnionClause(ExpressionSQLPrinter printer) throws IOException {
         if (hasUnionExpressions()) {

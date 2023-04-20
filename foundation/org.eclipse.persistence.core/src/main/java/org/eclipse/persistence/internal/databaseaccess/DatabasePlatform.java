@@ -3842,6 +3842,18 @@ public class DatabasePlatform extends DatasourcePlatform {
         }
     }
 
+    // jmix begin
+    public HintPosition getHintPosition() {
+        return HintPosition.INSIDE_QUERY;
+    }
+
+    public enum HintPosition {
+        INSIDE_QUERY,
+        BEFORE_QUERY,
+        AFTER_QUERY
+    }
+    // jmix end
+
     // Eager initialization in constructor causes CORBA Extension tests to fail.
     /**
      * Get JSON support extension instance.

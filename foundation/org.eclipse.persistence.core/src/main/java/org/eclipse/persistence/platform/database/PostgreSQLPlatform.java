@@ -754,6 +754,13 @@ public class PostgreSQLPlatform extends DatabasePlatform {
         }
     }
 
+    // jmix begin
+    @Override
+    public HintPosition getHintPosition() {
+        return HintPosition.BEFORE_QUERY;
+    }
+    // jmix end
+
     /**
      * INTERNAL
      * Set the parameter in the JDBC statement at the given index in case it is a UUID value.
