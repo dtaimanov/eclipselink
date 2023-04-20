@@ -2259,9 +2259,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             // If there is a clone, and it is not a refresh then just return it.
             boolean wasAClone = workingClone != null;
             boolean isARefresh = query.shouldRefreshIdentityMapResult() || (query.isLockQuery() && (!wasAClone || !query.isClonePessimisticLocked(workingClone, unitOfWork)));
+            boolean isUnionFetchGroups = false; // jmix
             // Also need to refresh if the clone is a partial object and query requires more than its fetch group.
             if (wasAClone && fetchGroupManager != null && (fetchGroupManager.isPartialObject(workingClone) && (!fetchGroupManager.isObjectValidForFetchGroup(workingClone, fetchGroupManager.getEntityFetchGroup(fetchGroup))))) {
-                isARefresh = true;
+                if (!fetchGroupManager.isObjectValidForFetchGroup(workingClone, fetchGroupManager.getEntityFetchGroup(fetchGroup))) { // jmix
+                    isARefresh = true;
+                    isUnionFetchGroups = true;
+                }
             }
             if (wasAClone && (!isARefresh)) {
                 return workingClone;
@@ -2346,7 +2350,13 @@ public class ObjectBuilder extends CoreObjectBuilder<AbstractRecord, AbstractSes
             // Turn it 'off' to prevent unwanted events.
             policy.dissableEventProcessing(workingClone);
             if (isARefresh && fetchGroupManager != null) {
-                fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
+                // jmix begin
+                if (isUnionFetchGroups && fetchGroupManager.isPartialObject(workingClone)) {
+                    fetchGroupManager.unionEntityFetchGroupIntoObject(workingClone, fetchGroupManager.getEntityFetchGroup(query.getExecutionFetchGroup(this.descriptor)), unitOfWork, false);
+                } else {
+                // jmix end
+                    fetchGroupManager.setObjectFetchGroup(workingClone, query.getExecutionFetchGroup(this.descriptor), unitOfWork);
+                }
             }
             if (!unitOfWork.wasTransactionBegunPrematurely() && descriptor.getCachePolicy().isProtectedIsolation() && !isIsolated && !query.shouldStoreBypassCache()) {
                 // we are at this point because we have isolated protected entities to the UnitOfWork
