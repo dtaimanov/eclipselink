@@ -475,14 +475,19 @@ public class AggregateObjectMapping extends AggregateMapping implements Relation
         } else {
             descriptor.getObjectBuilder().buildAttributesIntoObject(aggregate, buildWrapperCacheKeyForAggregate(cacheKey, targetIsProtected), databaseRow, nestedQuery, joinManager, nestedQuery.getExecutionFetchGroup(descriptor), refreshing, executionSession);
         }
-        if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager() && cacheKey != null
-                && (!refreshing || ((FetchGroupTracker) aggregate)._persistence_getFetchGroup() == null)// jmix
+        if ((targetFetchGroup != null) && descriptor.hasFetchGroupManager()
+                && (!refreshing && cacheKey != null || ((FetchGroupTracker) aggregate)._persistence_getFetchGroup() == null)// jmix
                 && sourceQuery.shouldMaintainCache() && !sourceQuery.shouldStoreBypassCache()) {
             // Set the fetch group to the domain object, after built.
             EntityFetchGroup entityFetchGroup = descriptor.getFetchGroupManager().getEntityFetchGroup(targetFetchGroup);
             if (entityFetchGroup != null) {
-                entityFetchGroup = (EntityFetchGroup)entityFetchGroup.cloneWithSameAttributes(); // jmix
-                entityFetchGroup.setRootEntity((FetchGroupTracker) cacheKey.getObject());
+                // jmix begin
+                entityFetchGroup = (EntityFetchGroup)entityFetchGroup.cloneWithSameAttributes();
+                if (cacheKey != null)
+                    entityFetchGroup.setRootEntity((FetchGroupTracker) cacheKey.getObject());
+                else
+                    entityFetchGroup.setRootEntity((FetchGroupTracker) targetObject);
+                // jmix end
                 entityFetchGroup.setOnEntity(aggregate, executionSession);
             }
         }
