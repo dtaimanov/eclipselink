@@ -2145,7 +2145,7 @@ public class DatabasePlatform extends DatasourcePlatform {
      *
      */
     public boolean shouldPrintInheritanceTableJoinsInFromClause() {
-        return printInheritanceTableJoinsInFromClause;
+        return Boolean.TRUE.equals(printInheritanceTableJoinsInFromClause);
     }
     // jmix end
 
