@@ -16,6 +16,8 @@ package org.eclipse.persistence.expressions;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -303,7 +305,8 @@ public class ExpressionBuilder extends ObjectExpression {
             }
             if (!this.wasAdditionJoinCriteriaUsed) {
                 // jmix begin
-                if (getSession().getPlatform().shouldPrintInheritanceTableJoinsInFromClause()) {
+                if (getSession().getPlatform().shouldPrintInheritanceTableJoinsInFromClause() &&
+                        addInheritanceTablesJoinsInFromClause(getDescriptor(), normalizer)) {
                     criteria = getDescriptor().getQueryManager().getAdditionalJoinExpressionWithoutMultiTableJoins();
                 } else {
                     criteria = getDescriptor().getQueryManager().getAdditionalJoinExpression();
@@ -352,6 +355,55 @@ public class ExpressionBuilder extends ObjectExpression {
 
         return this;
     }
+
+    /**
+     * jmix begin
+     *
+     * @param descriptor - current expression descriptor
+     * @param normalizer - expression normalizer
+     * @return true if joins were added, false if descriptor has no inheritance or joins aren't needed
+     */
+    protected boolean addInheritanceTablesJoinsInFromClause(ClassDescriptor descriptor, ExpressionNormalizer normalizer) {
+        SQLSelectStatement selectStatement = normalizer.getStatement();
+        List<DatabaseTable> tablesInCurrentExpression = getOwnedTables();
+        boolean joinExpressionAdded = false;
+
+        if (descriptor.hasInheritance() && !descriptor.equals(descriptor.getRootDescriptor())) {
+            ClassDescriptor rootDescriptor = descriptor.getRootDescriptor();
+            Map<DatabaseTable, Expression> childrenTablesJoinExpressions = rootDescriptor.getInheritancePolicy()
+                    .getChildrenTablesJoinExpressions();
+
+            if(childrenTablesJoinExpressions == null || childrenTablesJoinExpressions.isEmpty())
+                // Inheritance type is not JOINED
+                return false;
+
+            // Adding joins from the root entity but only for the tables used in the current statement
+            HashMap<DatabaseTable, Expression> joinExpressionsMap = new HashMap<>();
+            for (Map.Entry<DatabaseTable, Expression> entry : childrenTablesJoinExpressions.entrySet()) {
+                DatabaseTable table = entry.getKey();
+                Expression joinExpression = entry.getValue();
+                if (tablesInCurrentExpression.contains(table)) {
+                    // Twist expressions same way as it is done in the additionalExpressionCriteriaMap() method
+                    if (getBaseExpression() != null) {
+                        joinExpression = getBaseExpression().twist(joinExpression, this);
+                    } else {
+                        joinExpression = twist(joinExpression, this);
+                    }
+
+                    joinExpressionsMap.put(table, joinExpression);
+                }
+            }
+
+            if(!joinExpressionsMap.isEmpty()) {
+                selectStatement.addOuterJoinExpressionsHolders(null, null,
+                        joinExpressionsMap, getDescriptor().getRootDescriptor(), true);
+                joinExpressionAdded = true;
+            }
+        }
+
+        return joinExpressionAdded;
+    }
+    // jmix end
 
     /**
      * INTERNAL:
