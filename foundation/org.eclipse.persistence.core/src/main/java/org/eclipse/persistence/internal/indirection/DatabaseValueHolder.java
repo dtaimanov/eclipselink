@@ -15,16 +15,20 @@
 package org.eclipse.persistence.internal.indirection;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.indirection.ValueHolderInterface;
 import org.eclipse.persistence.indirection.WeavedAttributeValueHolderInterface;
+import org.eclipse.persistence.internal.helper.CubaUtil;
 import org.eclipse.persistence.internal.helper.Helper;
 import org.eclipse.persistence.internal.localization.ExceptionLocalization;
 import org.eclipse.persistence.internal.localization.ToStringLocalization;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
+import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * DatabaseValueHolder wraps a database-stored object and implements
@@ -107,9 +111,27 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
                             throwUnfetchedAttributeException();
                         }
                     }
+
+                    // Store client session parameters into TL variable in order to not lose tenantId
+                    // when L2 (persistence unit) entity cache used. Nested value holder has no access to client session in such case.
+                    if (!CubaUtil.hasProperties()) {
+                        Map<String, Object> properties = findClientSessionProperties();
+                        CubaUtil.setProperties(properties);
+                        try {
+                            // jmix end
+
+                            // The value must be set directly because the setValue can also cause instantiation under UOW.
+                            privilegedSetValue(instantiate());
+
+                            // jmix begin
+                        } finally {
+                            CubaUtil.clearProperties();
+                        }
+                    } else {
+                        // The value must be set directly because the setValue can also cause instantiation under UOW.
+                        privilegedSetValue(instantiate());
+                    }
                     // jmix end
-                    // The value must be set directly because the setValue can also cause instantiation under UOW.
-                    privilegedSetValue(instantiate());
                     this.isInstantiated = true;
                     postInstantiate();
                     resetFields();
@@ -118,6 +140,22 @@ public abstract class DatabaseValueHolder<T> implements WeavedAttributeValueHold
         }
         return value;
     }
+
+    //jmix begin
+    private Map<String, Object> findClientSessionProperties() {
+        AbstractSession session = this.session;
+
+        while (session != null) {
+            if (session.isClientSession()) {
+                return new HashMap<>(session.getProperties());
+            }
+            session = session instanceof UnitOfWork ? session.getParent() : null;
+        }
+
+        return null;
+    }
+    //jmix end
+
 
     /**
      * Process against the UOW and attempt to load a local copy before going to the shared cache
