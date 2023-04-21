@@ -850,12 +850,14 @@ public class QueryKeyExpression extends ObjectExpression {
                     }
                 }
                 // jmix begin
-                Expression additionalExpressionCriteria = additionalExpressionCriteria();
-                if (additionalExpressionCriteria != null) {
-                    if (getOnClause() != null) {
-                        setOnClause(getOnClause().and(additionalExpressionCriteria));
-                    } else {
-                        setOnClause(additionalExpressionCriteria);
+                if (!shouldUseOuterJoin() && !getSession().getPlatform().shouldPrintInnerJoinInWhereClause(normalizer.getStatement().getParentStatement() != null ? normalizer.getStatement().getParentStatement().getQuery() : normalizer.getStatement().getQuery())) {
+                    Expression additionalExpressionCriteria = additionalExpressionCriteria();
+                    if (additionalExpressionCriteria != null) {
+                        if (getOnClause() != null) {
+                            setOnClause(getOnClause().and(additionalExpressionCriteria));
+                        } else {
+                            setOnClause(additionalExpressionCriteria);
+                        }
                     }
                 }
                 // jmix end
