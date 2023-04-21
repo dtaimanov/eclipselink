@@ -278,13 +278,22 @@ public abstract class ObjectExpression extends DataExpression {
      * Return true if treat was used on this expression
      */
     public boolean isTreatUsed() {
-        if  (this.hasDerivedExpressions() )
-            for (Expression exp: this.derivedExpressions) {
-                if (exp.isTreatExpression()) {
-                    return true;
+        // jmix begin
+        List<Expression> derivedExpressionsCopy;
+        synchronized (this) {
+            if (derivedExpressions != null) {
+                derivedExpressionsCopy = new ArrayList<>(this.derivedExpressions);
+            } else {
+                return false;
+            }
+        }
+        for (Expression exp : derivedExpressionsCopy) {
+            if (exp.isTreatExpression()) {
+                return true;
             }
         }
         return false;
+        // jmix end
     }
 
     /**
