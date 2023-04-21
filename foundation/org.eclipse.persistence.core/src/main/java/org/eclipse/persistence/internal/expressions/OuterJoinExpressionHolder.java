@@ -46,6 +46,9 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
     List<Expression> additionalJoinOnExpression;
     List<Boolean> additionalTargetIsDescriptorTable;
     Boolean hasInheritance;
+    //jmix begin
+    boolean useInnerJoinForAdditionalJoinCriteria;
+    // jmix end
     List<Integer> indexList;
     // if it's a map then an additional holder created for the key.
     // mapKeyHolder is not used in sorting because there can be no outer joins out of it,
@@ -66,13 +69,23 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
 
     public OuterJoinExpressionHolder(SQLSelectStatement statement, ObjectExpression joinExpression, Expression outerJoinedMappingCriteria,
             Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria, ClassDescriptor descriptor) {
+        this(statement, joinExpression, outerJoinedMappingCriteria, outerJoinedAdditionalJoinCriteria, descriptor, false);
+    }
+
+    // jmix start
+    public OuterJoinExpressionHolder(SQLSelectStatement statement, ObjectExpression joinExpression, Expression outerJoinedMappingCriteria,
+                                     Map<DatabaseTable, Expression> outerJoinedAdditionalJoinCriteria, ClassDescriptor descriptor, boolean useInnerJoinForAdditionalJoinCriteria) {
         this.statement = statement;
         this.joinExpression = joinExpression;
 
         this.outerJoinedMappingCriteria = outerJoinedMappingCriteria;
         this.outerJoinedAdditionalJoinCriteria = outerJoinedAdditionalJoinCriteria;
         this.descriptor = descriptor;
+        // jmix difference with original method
+        this.useInnerJoinForAdditionalJoinCriteria = useInnerJoinForAdditionalJoinCriteria;
+        // jmix end
     }
+    // jmix end
 
     /*
      * Used for MapKeys
@@ -122,10 +135,25 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
             // will produce:
             //   SELECT ... FROM PROJECT t0 LEFT OUTER JOIN LPROJECT t1 ON (t1.PROJ_ID = t0.PROJ_ID)
             sourceTable = descriptor.getTables().get(0);
-            targetTable = descriptor.getInheritancePolicy().getChildrenTables().get(0);
-            Expression exp = outerJoinedAdditionalJoinCriteria.get(targetTable);
-            sourceAlias = exp.aliasForTable(sourceTable);
-            targetAlias = exp.aliasForTable(targetTable);
+
+            // jmix begin
+
+            // In the original code the target table was calculated by such code:
+            // targetTable = descriptor.getInheritancePolicy().getChildrenTables().get(0);
+            // But in some cases we don't have this table in the joinCriteria map and instead of using first table from
+            // children we're using first table from the map.
+            // In case of multitable inheritance join target table and target alias are not used in SQL generation so
+            // we can use any table from the criteria map safely. Mainly this is needed to determine source table alias
+            // from the expression.
+            if(!outerJoinedAdditionalJoinCriteria.isEmpty()) {
+                Map.Entry<DatabaseTable, Expression> firstJoin = outerJoinedAdditionalJoinCriteria.entrySet().iterator().next();
+
+                targetTable = firstJoin.getKey();
+                Expression exp = firstJoin.getValue();
+                sourceAlias = exp.aliasForTable(sourceTable);
+                targetAlias = exp.aliasForTable(targetTable);
+            }
+            // jmix end
         }
         if(usesHistory) {
             sourceTable = getTableAliases().get(sourceAlias);
@@ -260,7 +288,12 @@ public class OuterJoinExpressionHolder implements Comparable, Serializable
                 writer.write(" JOIN ");
             } else {
                 // it's child's table
-                writer.write(" LEFT OUTER JOIN ");
+                // jmix begin
+                if (useInnerJoinForAdditionalJoinCriteria) {
+                    writer.write(" JOIN ");
+                } else { // jmix end
+                    writer.write(" LEFT OUTER JOIN ");
+                }
             }
             DatabaseTable alias = this.additionalTargetAliases.get(i);
             table.printSQL(printer);

@@ -206,12 +206,19 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
             DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
             Expression additionalJoin;
             if (shouldUseAdditionalJoinExpression) {
-                additionalJoin = queryManager.getAdditionalJoinExpression();
+                // jmix begin
+                if (getSession().getPlatform().shouldPrintInheritanceTableJoinsInFromClause()) {
+                    additionalJoin = queryManager.getAdditionalJoinExpressionWithoutMultiTableJoins();
+                } else {
+                    additionalJoin = queryManager.getAdditionalJoinExpression();
+                }
+                // jmix end
             } else {
                 additionalJoin = queryManager.getMultipleTableJoinExpression();
-                if (additionalJoin == null) {
-                    return expression;
-                }
+            }
+
+            if (additionalJoin == null) {// jmix: moved out from if
+                return expression;
             }
 
             // If there's an expression, then we know we'll have to rebuild anyway, so don't clone.
@@ -774,6 +781,12 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         SQLSelectStatement selectStatement;
         selectStatement = new SQLSelectStatement();
         selectStatement.addField(field);
+        // jmix begin
+        if (getSession().getPlatform().shouldPrintInheritanceTableJoinsInFromClause()) {
+            addInheritanceTablesJoinsInFromClause(selectStatement);
+        }
+        // jmix end
+
         selectStatement.setWhereClause(((Expression)getDescriptor().getObjectBuilder().getPrimaryKeyExpression().clone()).and(getDescriptor().getQueryManager().getAdditionalJoinExpression()));
         selectStatement.setTranslationRow(getTranslationRow());
 
@@ -781,6 +794,39 @@ public class ExpressionQueryMechanism extends StatementQueryMechanism {
         selectStatement.setHintString(getQuery().getHintString());
         return selectStatement;
     }
+
+    // jmix begin
+    protected void addInheritanceTablesJoinsInFromClause(SQLSelectStatement selectStatement) {
+        Vector<DatabaseTable> tablesInCurrentStatement = (Vector<DatabaseTable>) selectStatement.getTables();
+
+        DescriptorQueryManager queryManager = getDescriptor().getQueryManager();
+        ClassDescriptor descriptor = queryManager.getDescriptor();
+
+        if (descriptor.hasInheritance() && !descriptor.equals(descriptor.getRootDescriptor())) {
+            ClassDescriptor rootDescriptor = descriptor.getRootDescriptor();
+            Map<DatabaseTable, Expression> childrenTablesJoinExpressions = rootDescriptor.getInheritancePolicy()
+                    .getChildrenTablesJoinExpressions();
+
+            if(childrenTablesJoinExpressions == null || childrenTablesJoinExpressions.isEmpty())
+                // Inheritance type is not JOINED
+                return;
+
+            // Adding joins from the root entity but only for the tables used in the current statement
+            HashMap<DatabaseTable, Expression> joinExpressionsMap = new HashMap<>(childrenTablesJoinExpressions);
+            for (Iterator<Map.Entry<DatabaseTable, Expression>> it = joinExpressionsMap.entrySet().iterator(); it.hasNext(); ) {
+                DatabaseTable databaseTable = it.next().getKey();
+                if (!tablesInCurrentStatement.contains(databaseTable)) {
+                    it.remove();
+                }
+            }
+
+            if(!joinExpressionsMap.isEmpty()) {
+                selectStatement.addOuterJoinExpressionsHolders(null, null,
+                        joinExpressionsMap, getDescriptor().getRootDescriptor(), true);
+            }
+        }
+    }
+    // jmix end
 
     protected SQLUpdateAllStatement buildUpdateAllStatement(DatabaseTable table,
                 HashMap databaseFieldsToValues,

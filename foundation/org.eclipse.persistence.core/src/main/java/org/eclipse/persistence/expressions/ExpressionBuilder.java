@@ -302,7 +302,13 @@ public class ExpressionBuilder extends ObjectExpression {
                 throw QueryException.noExpressionBuilderFound(this);
             }
             if (!this.wasAdditionJoinCriteriaUsed) {
-                criteria = getDescriptor().getQueryManager().getAdditionalJoinExpression();
+                // jmix begin
+                if (getSession().getPlatform().shouldPrintInheritanceTableJoinsInFromClause()) {
+                    criteria = getDescriptor().getQueryManager().getAdditionalJoinExpressionWithoutMultiTableJoins();
+                } else {
+                    criteria = getDescriptor().getQueryManager().getAdditionalJoinExpression();
+                }
+                // jmix end
                 if (criteria != null) {
                     criteria = twist(criteria, this);
                 }

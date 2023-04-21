@@ -107,6 +107,7 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     protected boolean hasCustomMultipleTableJoinExpression;
     protected String additionalCriteria;
     protected transient Expression additionalJoinExpression;
+    protected transient Expression additionalJoinExpressionWithoutMultiTableJoins; // jmix
     protected transient Expression multipleTableJoinExpression;
     protected Map<String, List<DatabaseQuery>> queries;
     protected transient Map<DatabaseTable, Expression> tablesJoinExpressions;
@@ -350,6 +351,15 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
     public Expression getAdditionalJoinExpression() {
         return additionalJoinExpression;
     }
+
+    // jmix begin
+    /**
+     *  Additional expression to add to the where clause without the multitable inheritance expression
+     */
+    public Expression getAdditionalJoinExpressionWithoutMultiTableJoins() {
+        return additionalJoinExpressionWithoutMultiTableJoins;
+    }
+    // jmix end
 
     /**
      * ADVANCED:
@@ -861,6 +871,11 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
         }
 
         if (getMultipleTableJoinExpression() != null) {
+            // jmix begin
+            // Store original expression to use if the inheritance joins are generated in the FROM clause
+            additionalJoinExpressionWithoutMultiTableJoins = getAdditionalJoinExpression();
+            // jmix end
+
             // Combine new multiple table expression to additional join expression
             setAdditionalJoinExpression(getMultipleTableJoinExpression().and(getAdditionalJoinExpression()));
         }
@@ -963,6 +978,9 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
 
             updatePropertyParameterExpression(selectionCriteria);
             additionalJoinExpression = selectionCriteria.and(additionalJoinExpression);
+            // jmix begin
+            additionalJoinExpressionWithoutMultiTableJoins = selectionCriteria.and(additionalJoinExpressionWithoutMultiTableJoins);
+            // jmix end
         }
 
         if (additionalJoinExpression != null) {
@@ -971,6 +989,14 @@ public class DescriptorQueryManager implements Cloneable, Serializable {
             // expression builder.
             additionalJoinExpression = additionalJoinExpression.rebuildOn(new ExpressionBuilder());
         }
+
+        // jmix begin
+        // rebuild like the previous one
+        if( additionalJoinExpressionWithoutMultiTableJoins != null) {
+            additionalJoinExpressionWithoutMultiTableJoins =
+                    additionalJoinExpressionWithoutMultiTableJoins.rebuildOn(new ExpressionBuilder());
+        }
+        // jmix end
     }
 
     /**
