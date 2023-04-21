@@ -2414,6 +2414,24 @@ public abstract class ForeignReferenceMapping extends DatabaseMapping {
                 cls = getDescriptor().getInheritancePolicy().classFromRow(row, executionSession);
             } else {
                 cls = getDescriptor().getJavaClass();
+                // jmix begin
+                if (getDescriptor().isAggregateDescriptor() && !map.containsKey(cls)) {
+                    Class rootClass = null;
+                    for (Object it : map.keySet()) {
+                        ClassDescriptor valueDescriptor = executionSession.getDescriptor((Class) it);
+                        if (valueDescriptor != null
+                                && valueDescriptor.hasInheritance()
+                                && valueDescriptor.getInheritancePolicy().shouldReadSubclasses()) {
+                            if (rootClass == null) {
+                                rootClass = valueDescriptor.getInheritancePolicy().classFromRow(row, executionSession);
+                            }
+                        }
+                    }
+                    if (rootClass != null) {
+                        cls = rootClass;
+                    }
+                }
+                // jmix end
             }
             fieldStartIndex = (Integer) map.get(cls);
         }
