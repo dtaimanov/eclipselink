@@ -849,6 +849,16 @@ public class QueryKeyExpression extends ObjectExpression {
                         setOnClause(historyOnClause);
                     }
                 }
+                // jmix begin
+                Expression additionalExpressionCriteria = additionalExpressionCriteria();
+                if (additionalExpressionCriteria != null) {
+                    if (getOnClause() != null) {
+                        setOnClause(getOnClause().and(additionalExpressionCriteria));
+                    } else {
+                        setOnClause(additionalExpressionCriteria);
+                    }
+                }
+                // jmix end
                 return this;
             } else if (isUsingOuterJoinForMultitableInheritance() && (!getSession().getPlatform().shouldPrintOuterJoinInWhereClause())) {
                 setOuterJoinExpIndex(statement.addOuterJoinExpressionsHolders(null, null, additionalExpressionCriteriaMap(), mapping.getReferenceDescriptor()));
