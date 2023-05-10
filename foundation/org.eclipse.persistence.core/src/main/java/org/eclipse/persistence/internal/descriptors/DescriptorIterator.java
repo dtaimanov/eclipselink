@@ -271,7 +271,7 @@ public abstract class DescriptorIterator {
             internalIterateIndirectContainer(container);
         }
 
-        if (shouldIterateOverUninstantiatedIndirectionObjects() || (shouldIterateOverIndirectionObjects() && container.isInstantiated()) || isForDetach()) {
+        if (shouldIterateOverUninstantiatedIndirectionObjects() || (shouldIterateOverIndirectionObjects() && container.isInstantiated())) { // jmix: removed "|| isForDetach()" - excessive data loading on detach is worse than Bug 541873
             // force instantiation only if specified
             mapping.iterateOnRealAttributeValue(this, container);
         } else if (shouldIterateOverIndirectionObjects()) {
