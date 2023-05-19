@@ -269,6 +269,14 @@
 <!--        <jruby.version>9.4.0.0</jruby.version>-->
     </properties>
 
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <name>Sonatype Nexus Releases</name>
+            <url>${jmixUploadUrl}</url>
+        </repository>
+    </distributionManagement>
+
     <!-- Default modules set and added to by all profiles -->
     <modules>
         <module>jpa/org.eclipse.persistence.jpa.jpql</module>
