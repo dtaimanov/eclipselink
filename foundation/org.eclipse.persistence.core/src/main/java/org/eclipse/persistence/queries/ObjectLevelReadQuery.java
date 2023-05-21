@@ -57,10 +57,7 @@ import org.eclipse.persistence.internal.expressions.ForUpdateClause;
 import org.eclipse.persistence.internal.expressions.ForUpdateOfClause;
 import org.eclipse.persistence.internal.expressions.ObjectExpression;
 import org.eclipse.persistence.internal.expressions.QueryKeyExpression;
-import org.eclipse.persistence.internal.helper.DatabaseField;
-import org.eclipse.persistence.internal.helper.DeferredLockManager;
-import org.eclipse.persistence.internal.helper.InvalidObject;
-import org.eclipse.persistence.internal.helper.NonSynchronizedVector;
+import org.eclipse.persistence.internal.helper.*;
 import org.eclipse.persistence.internal.history.UniversalAsOfClause;
 import org.eclipse.persistence.internal.queries.*;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
@@ -2062,7 +2059,7 @@ public abstract class ObjectLevelReadQuery extends ObjectBuildingQuery {
             return true;
         }
         // jmix begin
-        if (org.eclipse.persistence.internal.helper.CubaUtil.isSoftDeletion()) {
+        if (JmixUtil.isSoftDeletion()) {
             this.descriptor.getQueryManager().putCachedExpressionQuery(this);
             this.isCachedExpressionQuery = true;
             this.isExecutionClone = false;

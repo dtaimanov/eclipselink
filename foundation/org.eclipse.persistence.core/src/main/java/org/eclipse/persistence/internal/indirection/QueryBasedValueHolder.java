@@ -17,6 +17,7 @@ package org.eclipse.persistence.internal.indirection;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
 import org.eclipse.persistence.exceptions.DatabaseException;
 import org.eclipse.persistence.exceptions.ValidationException;
+import org.eclipse.persistence.internal.helper.JmixUtil;
 import org.eclipse.persistence.internal.sessions.AbstractRecord;
 import org.eclipse.persistence.internal.sessions.AbstractSession;
 import org.eclipse.persistence.internal.sessions.UnitOfWorkImpl;
@@ -28,7 +29,6 @@ import org.eclipse.persistence.queries.ObjectBuildingQuery;
 import org.eclipse.persistence.queries.ObjectLevelReadQuery;
 import org.eclipse.persistence.queries.ReadAllQuery;
 import org.eclipse.persistence.queries.ReadQuery;
-import org.eclipse.persistence.sessions.UnitOfWork;
 
 /**
  * QueryBasedValueHolder wraps a database-stored object and implements behavior
@@ -138,7 +138,7 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
         }
         // jmix begin
         if (getQuery() instanceof ReadAllQuery) {
-            if (!org.eclipse.persistence.internal.helper.CubaUtil.isSoftDeletion()) {
+            if (!JmixUtil.isSoftDeletion()) {
                 ReadQuery query = (ReadQuery) getQuery().clone();
                 query.setIsPrepared(false);
                 Object result = session.executeQuery(query, getRow());
@@ -157,14 +157,14 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
                 OneToOneMapping oneToOneMapping = (OneToOneMapping) databaseMapping;
                 softDeletionByMapping = oneToOneMapping.isSoftDeletionForValueHolder();
             }
-            if (softDeletionByMapping && org.eclipse.persistence.internal.helper.CubaUtil.isSoftDeletion()) {
+            if (softDeletionByMapping && JmixUtil.isSoftDeletion()) {
                 ReadQuery query = (ReadQuery) getQuery().clone();
                 query.setIsPrepared(false);
                 Object result = session.executeQuery(query, getRow());
                 getQuery().setSession(null);
                 return (T) result;
             } else {
-                Boolean prevSoftDeletion = org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(false);
+                Boolean prevSoftDeletion = JmixUtil.setSoftDeletion(false);
                 try {
                     ReadQuery query = (ReadQuery) getQuery().clone();
                     query.setIsPrepared(false);
@@ -172,7 +172,7 @@ public class QueryBasedValueHolder<T> extends DatabaseValueHolder<T> {
                     getQuery().setSession(null);
                     return (T) result;
                 } finally {
-                    org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(prevSoftDeletion);
+                    JmixUtil.setSoftDeletion(prevSoftDeletion);
                 }
             }
         }

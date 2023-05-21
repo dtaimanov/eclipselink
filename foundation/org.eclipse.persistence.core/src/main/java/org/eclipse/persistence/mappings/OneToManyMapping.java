@@ -44,6 +44,7 @@ import org.eclipse.persistence.internal.expressions.SQLUpdateStatement;
 import org.eclipse.persistence.internal.helper.ConversionManager;
 import org.eclipse.persistence.internal.helper.DatabaseField;
 import org.eclipse.persistence.internal.helper.DatabaseTable;
+import org.eclipse.persistence.internal.helper.JmixUtil;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.identitymaps.CacheKey;
 import org.eclipse.persistence.internal.queries.ContainerPolicy;
@@ -1735,12 +1736,12 @@ public class OneToManyMapping extends CollectionMapping implements RelationalMap
 
     @Override
     public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
-        if (org.eclipse.persistence.internal.helper.CubaUtil.isOriginalSoftDeletion()) {
-            Boolean prevSoftDeletion = org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(true);
+        if (JmixUtil.isOriginalSoftDeletion()) {
+            Boolean prevSoftDeletion = JmixUtil.setSoftDeletion(true);
             try {
                 return super.prepareNestedBatchQuery(query);
             } finally {
-                org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(prevSoftDeletion);
+                JmixUtil.setSoftDeletion(prevSoftDeletion);
             }
         } else {
             return super.prepareNestedBatchQuery(query);

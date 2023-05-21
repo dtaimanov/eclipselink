@@ -3,7 +3,7 @@ package org.eclipse.persistence.internal.helper;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CubaUtil {
+public class JmixUtil {
 
     private static ThreadLocal<Boolean> disableSoftDeleteTL = new ThreadLocal<>();
     private static ThreadLocal<Boolean> disableOriginalSoftDeleteTL = new ThreadLocal<>();

@@ -95,6 +95,7 @@ import org.eclipse.persistence.expressions.Expression;
 import org.eclipse.persistence.internal.databaseaccess.Accessor;
 import org.eclipse.persistence.internal.descriptors.OptimisticLockingPolicy;
 import org.eclipse.persistence.internal.helper.BasicTypeHelperImpl;
+import org.eclipse.persistence.internal.helper.JmixUtil;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaDeleteImpl;
 import org.eclipse.persistence.internal.jpa.querydef.CriteriaQueryImpl;
@@ -914,7 +915,7 @@ public class EntityManagerImpl implements org.eclipse.persistence.jpa.JpaEntityM
 
         // jmix
         ReadObjectQuery query = null;
-        if (org.eclipse.persistence.internal.helper.CubaUtil.isSoftDeletion()) {
+        if (JmixUtil.isSoftDeletion()) {
             // Get the read object query and apply the properties to it.
             // PERF: use descriptor defined query to avoid extra query creation.
             query = descriptor.getQueryManager().getReadObjectQuery();

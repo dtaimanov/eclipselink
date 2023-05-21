@@ -51,7 +51,7 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.concurrent.TimeUnit;
 
-import org.eclipse.persistence.internal.helper.CubaUtil;
+import org.eclipse.persistence.internal.helper.JmixUtil;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.eclipse.persistence.config.ReferenceMode;
 import org.eclipse.persistence.descriptors.ClassDescriptor;
@@ -1262,7 +1262,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
         public void checkAndRefreshInvalidObject(Object object, CacheKey cacheKey, ClassDescriptor descriptor) {
             if (isConsideredInvalid(object, cacheKey, descriptor)) {
                 // jmix begin: always load refreshed object
-                Boolean prevSoftDeletion = CubaUtil.setSoftDeletion(false);
+                Boolean prevSoftDeletion = JmixUtil.setSoftDeletion(false);
                 try {
                 // jmix end
                     ReadObjectQuery query = new ReadObjectQuery();
@@ -1273,7 +1273,7 @@ public abstract class AbstractSession extends CoreAbstractSession<ClassDescripto
                     this.executeQuery(query);
                 // jmix begin
                 } finally {
-                    CubaUtil.setSoftDeletion(prevSoftDeletion);
+                    JmixUtil.setSoftDeletion(prevSoftDeletion);
                 }
                 // jmix end
             }

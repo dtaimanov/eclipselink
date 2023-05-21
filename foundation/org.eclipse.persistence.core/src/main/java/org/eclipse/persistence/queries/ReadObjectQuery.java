@@ -39,6 +39,7 @@ import org.eclipse.persistence.internal.databaseaccess.DatabaseCall;
 import org.eclipse.persistence.internal.databaseaccess.DatabasePlatform;
 import org.eclipse.persistence.internal.descriptors.ObjectBuilder;
 import org.eclipse.persistence.internal.helper.InvalidObject;
+import org.eclipse.persistence.internal.helper.JmixUtil;
 import org.eclipse.persistence.internal.identitymaps.CacheId;
 import org.eclipse.persistence.internal.indirection.ProxyIndirectionPolicy;
 import org.eclipse.persistence.internal.queries.DatasourceCallQueryMechanism;
@@ -316,7 +317,7 @@ public class ReadObjectQuery extends ObjectLevelReadQuery {
     @Override
     protected DatabaseQuery checkForCustomQuery(AbstractSession session, AbstractRecord translationRow) {
         // jmix begin
-        if (!org.eclipse.persistence.internal.helper.CubaUtil.isSoftDeletion()) {
+        if (!JmixUtil.isSoftDeletion()) {
             return null;
         }
         // jmix end

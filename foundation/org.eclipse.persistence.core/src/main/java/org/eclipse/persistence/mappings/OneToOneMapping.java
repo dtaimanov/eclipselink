@@ -2336,18 +2336,18 @@ public class OneToOneMapping extends ObjectReferenceMapping implements Relationa
     @Override
     public ReadQuery prepareNestedBatchQuery(ObjectLevelReadQuery query) {
         if (!softDeletionForBatch) {
-            Boolean prevSoftDeletion = org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(false);
+            Boolean prevSoftDeletion = JmixUtil.setSoftDeletion(false);
             try {
                 return super.prepareNestedBatchQuery(query);
             } finally {
-                org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(prevSoftDeletion);
+                JmixUtil.setSoftDeletion(prevSoftDeletion);
             }
-        } else if (org.eclipse.persistence.internal.helper.CubaUtil.isOriginalSoftDeletion()) {
-            Boolean prevSoftDeletion = org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(true);
+        } else if (JmixUtil.isOriginalSoftDeletion()) {
+            Boolean prevSoftDeletion = JmixUtil.setSoftDeletion(true);
             try {
                 return super.prepareNestedBatchQuery(query);
             } finally {
-                org.eclipse.persistence.internal.helper.CubaUtil.setSoftDeletion(prevSoftDeletion);
+                JmixUtil.setSoftDeletion(prevSoftDeletion);
             }
         } else {
             return super.prepareNestedBatchQuery(query);
