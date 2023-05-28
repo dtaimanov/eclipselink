@@ -116,12 +116,12 @@
         </testResources>
 
         <plugins>
-            <!--Required for EL Weaving (-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar})-->
+            <!--Required for EL Weaving (-javaagent:${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar})-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <!--Resolve dependencies into Maven properties like ${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
                         <id>get-test-classpath-to-properties</id>
                         <goals>
@@ -153,7 +153,7 @@
                     <workingDirectory>${project.build.directory}/test-run</workingDirectory>
                     <!--EclipseLink Weaving is enabled.
                         When it will be disabled by -Dignore or without arg switch it leads into test errors-->
-                    <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>
+                    <argLine>-javaagent:${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar}</argLine>
                     <!--Set system properties required for tests-->
                     <systemPropertiesFile>${test.properties.file}</systemPropertiesFile>
                 </configuration>

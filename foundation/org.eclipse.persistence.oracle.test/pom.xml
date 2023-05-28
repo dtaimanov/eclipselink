@@ -112,7 +112,7 @@
         <!--Other modules-->
         <!--EclipseLink JPA-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <scope>test</scope>
         </dependency>

@@ -25,7 +25,7 @@ mvn install -f pom.xml
 cd ../..
 
 echo "============================================================================================================"
-echo "    Installing org.eclipse.persistence:org.eclipse.persistence.jpa:${FORK_VERSION} to Maven Local"
+echo "    Installing io.jmix.eclipselink:org.eclipse.persistence.jpa:${FORK_VERSION} to Maven Local"
 echo "============================================================================================================"
 cd jpa/org.eclipse.persistence.jpa
 mvn versions:set -DnewVersion="${FORK_VERSION}"

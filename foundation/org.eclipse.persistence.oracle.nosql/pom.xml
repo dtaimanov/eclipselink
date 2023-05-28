@@ -38,7 +38,7 @@
     <dependencies>
         <!--Other modules-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
         </dependency>
         <!--API dependecies-->
@@ -305,7 +305,7 @@
                     <scope>test</scope>
                 </dependency>
                 <dependency>
-                    <groupId>org.eclipse.persistence</groupId>
+                    <groupId>io.jmix.eclipselink</groupId>
                     <artifactId>org.eclipse.persistence.jpa</artifactId>
                     <scope>test</scope>
                 </dependency>

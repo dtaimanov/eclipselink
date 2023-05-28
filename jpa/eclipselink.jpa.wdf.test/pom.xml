@@ -48,7 +48,7 @@
         <!--Other modules-->
         <!--EclipseLink JPA-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <scope>test</scope>
         </dependency>
@@ -108,12 +108,12 @@
         </testResources>
 
         <plugins>
-            <!--Required for EL Weaving (-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar})-->
+            <!--Required for EL Weaving (-javaagent:${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar})-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <!--Resolve dependencies into Maven properties like ${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
                         <id>get-test-classpath-to-properties</id>
                         <goals>
@@ -226,7 +226,7 @@
                         </goals>
                         <configuration>
                             <argLine>-Dignore</argLine>
-                            <!--<argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</argLine>-->
+                            <!--<argLine>-javaagent:${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar}</argLine>-->
                             <skipTests>${test-skip-jpa-wdf}</skipTests>
                             <reportNameSuffix>test-jpa-wdf</reportNameSuffix>
                             <systemPropertyVariables>

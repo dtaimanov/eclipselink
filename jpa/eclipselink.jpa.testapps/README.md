@@ -113,7 +113,7 @@ if no customized descriptor is provided in `src/main/resources-ejb/META-INF/pers
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <!--Resolve dependencies into Maven properties like ${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
                         <id>get-test-classpath-to-properties</id>
                         <phase>process-test-classes</phase>
@@ -143,7 +143,7 @@ if no customized descriptor is provided in `src/main/resources-ejb/META-INF/pers
                         <id>default-test</id>
                         <configuration>
                             <!-- turn on dynamic weaving -->
-                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
+                            <argLine>-javaagent:${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
                         </configuration>
                     </execution>
                     <execution>

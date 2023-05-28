@@ -17,7 +17,7 @@
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.asm:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa.jpql:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.core:jar}"/>
-<resource-root path="${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}"/>
+<resource-root path="${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.moxy:jar}"/>
 <resource-root path="${org.eclipse.persistence:org.eclipse.persistence.sdo:jar}"/>
 <resource-root path="${org.eclipse.persistence:commonj.sdo:jar}"/>

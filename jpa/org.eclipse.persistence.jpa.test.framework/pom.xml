@@ -44,12 +44,12 @@
         </dependency>
         <!--Other modules-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <scope>provided</scope>
         </dependency>

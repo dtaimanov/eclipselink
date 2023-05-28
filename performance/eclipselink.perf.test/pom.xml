@@ -58,7 +58,7 @@
         </dependency>
         <!--Other modules-->
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <scope>test</scope>
         </dependency>
@@ -160,7 +160,7 @@
                             <outputProperty>maven.test-compile.classpath</outputProperty>
                         </configuration>
                     </execution>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <!--Resolve dependencies into Maven properties like ${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
                         <id>get-test-classpath-to-properties</id>
                         <goals>
@@ -182,7 +182,7 @@
                         </systemProperty>
                         <systemProperty>
                             <key>eclipselink.agent</key>
-                            <value>${org.eclipse.persistence:org.eclipse.persistence.jpa:jar}</value>
+                            <value>${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar}</value>
                         </systemProperty>
                     </systemProperties>
                     <skip>${skipTests}</skip>

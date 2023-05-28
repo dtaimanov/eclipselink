@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink JPA</name>
-    <groupId>org.eclipse.persistence</groupId>
+    <groupId>io.jmix.eclipselink</groupId>
     <artifactId>org.eclipse.persistence.jpa</artifactId>
     <packaging>jar</packaging>
     <version>4.0.1-SNAPSHOT</version>
@@ -39,7 +39,7 @@
             <scope>runtime</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <version>${version}</version>
         </dependency>
@@ -224,7 +224,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>${project.parent.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.parent.version}</version>
                                 </artifactItem>
@@ -236,7 +236,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>${project.parent.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.parent.version}</version>
                                 </artifactItem>
@@ -248,7 +248,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>${project.parent.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.parent.version}</version>
                                 </artifactItem>

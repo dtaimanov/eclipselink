@@ -63,7 +63,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
-                    <!--Resolve dependencies into Maven properties like ${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} for JPA module-->
+                    <!--Resolve dependencies into Maven properties like ${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} for JPA module-->
                     <execution>
                         <id>get-test-classpath-to-properties</id>
                         <phase>process-test-classes</phase>
@@ -91,7 +91,7 @@
                     <execution>
                         <id>default-test</id>
                         <configuration>
-                            <argLine>-javaagent:${org.eclipse.persistence:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
+                            <argLine>-javaagent:${io.jmix.eclipselink:org.eclipse.persistence.jpa:jar} @{argLine}</argLine>
                         </configuration>
                     </execution>
                 </executions>

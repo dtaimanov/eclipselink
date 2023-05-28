@@ -117,7 +117,7 @@
                                     <destFileName>org.eclipse.persistence.asm_DEV.jar</destFileName>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.eclipse.persistence</groupId>
+                                    <groupId>io.jmix.eclipselink</groupId>
                                     <artifactId>org.eclipse.persistence.core</artifactId>
                                     <version>${project.version}</version>
                                     <destFileName>org.eclipse.persistence.core_DEV.jar</destFileName>
@@ -129,7 +129,7 @@
                                     <version>${project.version}</version>
                                 </artifactItem>
                                 <artifactItem>
-                                    <groupId>org.eclipse.persistence</groupId>
+                                    <groupId>io.jmix.eclipselink</groupId>
                                     <artifactId>org.eclipse.persistence.jpa</artifactId>
                                     <destFileName>org.eclipse.persistence.jpa_DEV.jar</destFileName>
                                     <version>${project.version}</version>
@@ -197,11 +197,11 @@
                                 <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
                             </dependency>
                             <dependency>
-                                <groupId>org.eclipse.persistence</groupId>
+                                <groupId>io.jmix.eclipselink</groupId>
                                 <artifactId>org.eclipse.persistence.core</artifactId>
                             </dependency>
                             <dependency>
-                                <groupId>org.eclipse.persistence</groupId>
+                                <groupId>io.jmix.eclipselink</groupId>
                                 <artifactId>org.eclipse.persistence.jpa</artifactId>
                             </dependency>
                             <dependency>

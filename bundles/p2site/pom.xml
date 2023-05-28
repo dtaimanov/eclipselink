@@ -42,7 +42,7 @@
             <artifactId>org.eclipse.persistence.asm</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
         </dependency>
         <dependency>
@@ -62,7 +62,7 @@
             <artifactId>org.eclipse.persistence.extension</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
         </dependency>
         <dependency>
@@ -284,7 +284,7 @@
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <classifier>sources</classifier>
         </dependency>
@@ -304,7 +304,7 @@
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <classifier>sources</classifier>
         </dependency>

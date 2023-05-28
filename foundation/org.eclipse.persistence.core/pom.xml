@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <name>EclipseLink Core</name>
-    <groupId>org.eclipse.persistence</groupId>
+    <groupId>io.jmix.eclipselink</groupId>
     <artifactId>org.eclipse.persistence.core</artifactId>
     <packaging>jar</packaging>
     <version>4.0.1-SNAPSHOT</version>
@@ -620,7 +620,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>${project.parent.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.parent.version}</version>
                                 </artifactItem>
@@ -632,7 +632,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>${project.parent.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.parent.version}</version>
                                 </artifactItem>
@@ -644,7 +644,7 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>${project.groupId}</groupId>
+                                    <groupId>${project.parent.groupId}</groupId>
                                     <artifactId>org.eclipse.persistence.parent</artifactId>
                                     <version>${project.parent.version}</version>
                                 </artifactItem>

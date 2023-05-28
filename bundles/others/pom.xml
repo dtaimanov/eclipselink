@@ -66,7 +66,7 @@
             <artifactId>org.eclipse.persistence.asm</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
         </dependency>
         <dependency>
@@ -86,7 +86,7 @@
             <artifactId>org.eclipse.persistence.extension</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
         </dependency>
         <dependency>
@@ -295,7 +295,7 @@
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.core</artifactId>
             <classifier>sources</classifier>
         </dependency>
@@ -315,7 +315,7 @@
             <classifier>sources</classifier>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
+            <groupId>io.jmix.eclipselink</groupId>
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <classifier>sources</classifier>
         </dependency>
@@ -451,11 +451,11 @@
                                 <dependencySourceInclude>org.eclipse.persistence:jakarta.persistence</dependencySourceInclude>
                                 <dependencySourceInclude>jakarta.xml.bind:jakarta.xml.bind-api</dependencySourceInclude>
                                 <!--Eclipselink modules-->
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.core</dependencySourceInclude>
+                                <dependencySourceInclude>io.jmix.eclipselink:org.eclipse.persistence.core</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.corba</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.oracle</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.dbws</dependencySourceInclude>
-                                <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpa</dependencySourceInclude>
+                                <dependencySourceInclude>io.jmix.eclipselink:org.eclipse.persistence.jpa</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.jpa.jpql</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.moxy</dependencySourceInclude>
                                 <dependencySourceInclude>org.eclipse.persistence:org.eclipse.persistence.moxy.utils.xjc</dependencySourceInclude>
